@@ -1,3 +1,5 @@
+import re
+
 class Interpreter(object):
     def __init__(self, text, debug = 0):
         self.text = text
@@ -80,6 +82,7 @@ class Interpreter(object):
 
 def main():
     while True:
+        debug = 0
         try:
             text = input('bfk> ')
         except EOFError:
@@ -88,11 +91,16 @@ def main():
             continue
         if text == "help":
             print("write \"debug [your code]\" to activate debug mode")
+            print("write \"read [your file]\" to run a brainfuck file (.bfk)")
             print("Hello World: ++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>.+.")
-        elif text[:6] == "debug ":
-            Interpreter(text[6:len(text)], 1).expr()
         else:
-            Interpreter(text).expr()
+            if text.find("debug") != -1:
+                debug = 1
+                print("Interpreting script with debug mode")
+            if text.find("read") != -1:
+                with open(re.search(r"[A-Za-z0-9.-_]+\.[bfk]+", text).group(), 'r') as content_file:
+                    text = content_file.read()
+            Interpreter(text, debug).expr()
 
 if __name__ == '__main__':
     main()
